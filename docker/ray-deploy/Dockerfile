@@ -1,6 +1,6 @@
 # The examples Docker image adds dependencies needed to run the examples
-ARG cuda_version=8.0
-ARG cudnn_version=6
+ARG cuda_version=9.0
+ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
 ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
@@ -37,8 +37,8 @@ RUN apt-get update -y \
     && pip3 install --upgrade pip \
     && pip install -U setuptools wheel \
     && pip install -U ray \
-    && pip install psutil setproctitle \
-    && pip install tensorflow-gpu \
+    && pip install --no-cache-dir psutil setproctitle \
+    && pip install tensorflow-gpu==1.10.0 \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove \
@@ -55,4 +55,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-WORKDIR /home/py_ws
+ADD . /py_ws
+WORKDIR /py_ws
+
+ENV PYTHONPATH /py_ws
