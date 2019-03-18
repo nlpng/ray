@@ -8,8 +8,8 @@ case ${key} in
     --no-cache)
     NO_CACHE="--no-cache"
     ;;
-    --skip-worker)
-    SKIP_WORKER=YES
+    --skip-deploy)
+    SKIP_DEPLOY=YES
     ;;
     --output-sha)
     # output the SHA sum of the last built file (either ray-project/deploy
@@ -25,22 +25,18 @@ esac
 shift
 done
 
-# Build the current Ray source
-git rev-parse HEAD > ./docker/ray-head/git-rev
-git archive -o ./docker/ray-head/ray.tar $(git rev-parse HEAD)
 if [[ ${OUTPUT_SHA} ]]; then
-    IMAGE_SHA=$(docker build --no-cache -q -t registry.leapmind.xyz/huang/ray-head docker/ray-head)
+    IMAGE_SHA=$(docker build --no-cache -q -t registry.leapmind.xyz/huang/ray-base docker/ray-base)
 else
-    docker build --no-cache -t registry.leapmind.xyz/huang/ray-head docker/ray-head
+    docker build --no-cache -t registry.leapmind.xyz/huang/ray-base docker/ray-base
 fi
-rm ./docker/ray-head/ray.tar ./docker/ray-head/git-rev
 
 
-if [[ ! ${SKIP_WORKER} ]]; then
+if [[ ! ${SKIP_DEPLOY} ]]; then
     if [[ ${OUTPUT_SHA} ]]; then
-        IMAGE_SHA=$(docker build ${NO_CACHE} -q -t registry.leapmind.xyz/huang/ray-worker docker/ray-worker)
+        IMAGE_SHA=$(docker build ${NO_CACHE} -q -t registry.leapmind.xyz/huang/ray-deploy docker/ray-deploy)
     else
-        docker build --no-cache -t registry.leapmind.xyz/huang/ray-worker docker/ray-worker
+        docker build --no-cache -t registry.leapmind.xyz/huang/ray-deploy docker/ray-deploy
     fi
 fi
 
