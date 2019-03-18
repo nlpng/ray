@@ -5,9 +5,6 @@ while [[ $# -gt 0 ]]
 do
 key="$1"
 case ${key} in
-    --no-cache)
-    NO_CACHE="--no-cache"
-    ;;
     --skip-deploy)
     SKIP_DEPLOY=YES
     ;;
@@ -19,17 +16,17 @@ case ${key} in
     OUTPUT_SHA=YES
     ;;
     *)
-    echo "Usage: build-docker.sh [ --no-cache ] [ --skip-worker ] [ --sha-sums ]"
+    echo "Usage: build-docker.sh [ --skip-worker ] [ --sha-sums ]"
     exit 1
 esac
 shift
 done
 
-#if [[ ${OUTPUT_SHA} ]]; then
-#    IMAGE_SHA=$(docker build --no-cache -q -t registry.leapmind.xyz/huang/ray-base docker/ray-base)
-#else
-#    docker build --no-cache -t registry.leapmind.xyz/huang/ray-base docker/ray-base
-#fi
+if [[ ${OUTPUT_SHA} ]]; then
+    IMAGE_SHA=$(docker build --no-cache -q -t registry.leapmind.xyz/huang/ray-base docker/ray-base)
+else
+    docker build --no-cache -t registry.leapmind.xyz/huang/ray-base docker/ray-base
+fi
 
 
 if [[ ! ${SKIP_DEPLOY} ]]; then

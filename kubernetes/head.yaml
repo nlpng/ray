@@ -47,7 +47,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-head
-          image: registry.leapmind.xyz/huang/ray-base
+          image: registry.leapmind.xyz/huang/ray-deploy
           imagePullPolicy: Always
           command: [ "/bin/bash", "-c", "--" ]
           args: ["ray start --head --redis-port=6379 --redis-shard-ports=6380,6381 --object-manager-port=12345 --node-manager-port=12346 --node-ip-address=$MY_POD_IP --block"]
@@ -63,7 +63,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           resources:
-            requests:
-              cpu: 2
+            limits:
+              nvidia.com/gpu: 4
       imagePullSecrets:
         - name: huang-registry-secret
