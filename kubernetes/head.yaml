@@ -40,14 +40,15 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoreDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchLabels:
                 type: ray
             topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-head
-          image: rayproject/examples
+          image: registry.leapmind.xyz/huang/ray-head
+          imagePullPolicy: Always
           command: [ "/bin/bash", "-c", "--" ]
           args: ["ray start --head --redis-port=6379 --redis-shard-ports=6380,6381 --object-manager-port=12345 --node-manager-port=12346 --node-ip-address=$MY_POD_IP --block"]
           ports:
@@ -64,3 +65,5 @@ spec:
           resources:
             requests:
               cpu: 2
+      imagePullSecrets:
+        - name: huang-registry-secret

@@ -23,7 +23,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-worker
-          image: rayproject/examples
+          image: registry.leapmind.xyz/huang/ray-worker
           command: ["/bin/bash", "-c", "--"]
           args: ["ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346 --block"]
           ports:
@@ -35,5 +35,5 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           resources:
-            requests:
-              cpu: 2
+            limits:
+              nvidia.com/gpu: 4
