@@ -16,7 +16,7 @@ RUN apt-get update \
     && pip3 install --upgrade pip \
     && pip install -U setuptools wheel \
     && pip install -U ray \
-    && pip install psutil \
+    && pip install psutil setproctitle \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove \

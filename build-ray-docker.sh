@@ -34,7 +34,7 @@ fi
 
 if [[ ! ${SKIP_DEPLOY} ]]; then
     if [[ ${OUTPUT_SHA} ]]; then
-        IMAGE_SHA=$(docker build ${NO_CACHE} -q -t registry.leapmind.xyz/huang/ray-deploy docker/ray-deploy)
+        IMAGE_SHA=$(docker build --no-cache -q -t registry.leapmind.xyz/huang/ray-deploy docker/ray-deploy)
     else
         docker build --no-cache -t registry.leapmind.xyz/huang/ray-deploy docker/ray-deploy
     fi
