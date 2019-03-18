@@ -1,45 +1,44 @@
 # The examples Docker image adds dependencies needed to run the examples
+ARG cuda_version=8.0
+ARG cudnn_version=6
+FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
-FROM registry.leapmind.xyz/huang/ray-base
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
 
-ENV BUILD_PACKAGES="\
-        linux-headers-4.9 \
-        cmake \
-        tcl-dev \
-        xz-utils \
-        zlib1g-dev" \
-    APT_PACKAGES="\
-        ca-certificates \
-        openssl \
-        libpng16-16 \
-        libfreetype6 \
-        libjpeg62-turbo \
-        libgomp1" \
-    PIP_PACKAGES="\
-        pyyaml \
-        mkl \
-        cffi \
-        h5py \
-        requests \
-        pillow \
-        graphviz \
-        numpy \
-        pandas \
-        scipy \
-        scikit-learn \
-        seaborn \
-        xgboost \
-        hyperopt \
-        tensorflow-gpu"
-
-RUN set -ex \
-    && apt-get update -y \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends ${APT_PACKAGES} \
-    && apt-get install -y --no-install-recommends ${BUILD_PACKAGES} \
-    && pip install -U -v setuptools wheel \
-    && pip install -U -v ${PIP_PACKAGES} \
-    && apt-get remove --purge --auto-remove -y ${BUILD_PACKAGES} \
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+    cmake \
+    locales\
+    python3 \
+    python3-dev \
+    python3-pip \
+    python3-wheel \
+    && apt-get install -y --no-install-recommends \
+    python3-pil \
+    libjpeg8-dev \
+    zlib1g-dev \
+    liblapack-dev \
+    git \
+    wget \
+    curl \
+    make \
+    build-essential \
+    libssl-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    && cd /usr/local/bin \
+    && ln -s /usr/bin/python3 python \
+    && pip3 install --upgrade pip \
+    && pip install -U setuptools wheel \
+    && pip install -U ray \
+    && pip install psutil setproctitle \
+    && pip install tensorflow-gpu \
     && apt-get clean \
     && apt-get autoclean \
     && apt-get autoremove \
@@ -51,6 +50,9 @@ RUN set -ex \
     && find /usr/lib/python3 -name __pycache__ | xargs rm -rf \
     && rm -rf /root/.[acpw]*
 
-# This updates numpy to 1.14 and mutes errors from other libraries
-RUN pip install -y numpy opencv-python-headless lz4 pytest-timeout smart_open\
-    && pip install --upgrade h5py bayesian-optimization hyperopt sigopt
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+WORKDIR /home/py_ws
