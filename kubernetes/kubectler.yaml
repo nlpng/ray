@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ray-ctler
+spec:
+  containers:
+    - name: ray-ctler
+      image: registry.leapmind.xyz/huang/ray-ctl
+      command: ["/bin/bash", "-c", "--"]
+      args: ["kubectl version"]
+      volumeMounts:
+        - name: storage
+          mountPath: /storage
+        - name: registry-cred
+          mountPath: /root
+      volumes:
+        - name: storage
+
+          resources:
+            limits:
+              nvidia.com/gpu: 4
+  imagePullSecrets:
+    - name: huang-registry-secret

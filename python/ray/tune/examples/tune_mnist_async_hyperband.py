@@ -31,6 +31,7 @@ import argparse
 import sys
 import tempfile
 import time
+import socket
 
 import ray
 from ray.tune import grid_search, run
@@ -233,7 +234,7 @@ if __name__ == "__main__":
         mnist_spec['stop']['training_iteration'] = 2
         mnist_spec['num_samples'] = 1
 
-    ray.init()
+    ray.init(redis_address=socket.gethostbyname("ray-head") + ":6379")
 
     from ray.tune.schedulers import AsyncHyperBandScheduler
     run(train,
