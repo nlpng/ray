@@ -4,10 +4,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import argparse
 import json
 import os
 import random
+import socket
 
 import numpy as np
 
@@ -61,6 +61,7 @@ if __name__ == "__main__":
             "width": sample_from(lambda spec: 10 + int(90 * random.random())),
             "height": sample_from(lambda spec: int(100 * random.random())),
         },
+        "local_dir": "/storage/users/neil/",
         "num_samples": 20,
     }
     # asynchronous hyperband early stopping, configured with
@@ -73,5 +74,5 @@ if __name__ == "__main__":
         grace_period=5,
         max_t=100)
 
-    ray.init()
+    ray.init(redis_address=socket.gethostbyname("ray-head") + ":6379")
     trials = run_experiments(experiments={'exp_tune': tune_spec}, scheduler=ahb)

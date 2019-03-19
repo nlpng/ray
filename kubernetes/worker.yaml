@@ -14,14 +14,21 @@ spec:
         component: ray-worker
         type: ray
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  type: ray
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-worker
           image: registry.leapmind.xyz/huang/ray-deploy
           command: ["/bin/bash", "-c", "--"]
           args:
-            - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/tune_mnist_ray.py &&
+            - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/async_hyperband_example.py &&
               ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346  &&
-              python tune_mnist_ray.py"
+              python async_hyperband_example.py"
           ports:
             - containerPort: 12345
             - containerPort: 12346
@@ -30,5 +37,17 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+          volumeMounts:
+            - mountPath: "/storage"
+              name: cephfs
       imagePullSecrets:
         - name: huang-registry-secret
+      volumes:
+        - name: cephfs
+          flexVolume:
+            driver: rook.io/rook
+            fsType: ceph
+            options:
+              fsName: myfs
+              clusterNamespace: rook-ceph
+

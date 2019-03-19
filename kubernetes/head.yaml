@@ -62,8 +62,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          resources:
-            limits:
-              nvidia.com/gpu: 4
+          volumeMounts:
+            - mountPath: "/storage"
+              name: cephfs
       imagePullSecrets:
         - name: huang-registry-secret
+      volumes:
+        - name: cephfs
+          flexVolume:
+            driver: rook.io/rook
+            fsType: ceph
+            options:
+              fsName: myfs
+              clusterNamespace: rook-ceph
