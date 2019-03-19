@@ -20,7 +20,7 @@ spec:
           command: ["/bin/bash", "-c", "--"]
           args:
             - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/async_hyperband_example.py &&
-              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346  &&
+              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346 &&
               python async_hyperband_example.py"
           ports:
             - containerPort: 12345

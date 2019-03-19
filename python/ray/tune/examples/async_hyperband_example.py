@@ -61,7 +61,7 @@ if __name__ == "__main__":
             "width": sample_from(lambda spec: 10 + int(90 * random.random())),
             "height": sample_from(lambda spec: int(100 * random.random())),
         },
-        "local_dir": "/storage/users/neil/",
+        "local_dir": "/storage/users/neil/ray_results",
         "num_samples": 20,
     }
     # asynchronous hyperband early stopping, configured with
@@ -73,8 +73,6 @@ if __name__ == "__main__":
         reward_attr="episode_reward_mean",
         grace_period=5,
         max_t=100)
-
-    print(socket.gethostbyname("ray-head") + ":6379")
 
     ray.init(redis_address=socket.gethostbyname("ray-head") + ":6379")
     trials = run_experiments(experiments={'exp_tune': tune_spec}, scheduler=ahb)
