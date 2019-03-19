@@ -48,20 +48,8 @@ class MyTrainableClass(Trainable):
 
 if __name__ == "__main__":
     register_trainable('tunable', MyTrainableClass)
-    ray.init()
-
-    # asynchronous hyperband early stopping, configured with
-    # `episode_reward_mean` as the
-    # objective and `training_iteration` as the time unit,
-    # which is automatically filled by Tune.
-    ahb = AsyncHyperBandScheduler(
-        time_attr="training_iteration",
-        reward_attr="episode_reward_mean",
-        grace_period=5,
-        max_t=100)
-
     tune_spec = {
-        "run'": "tunable",
+        "run": "tunable",
         "stop": {
             "training_iteration": 1000
         },
@@ -75,5 +63,15 @@ if __name__ == "__main__":
         },
         "num_samples": 20,
     }
+    # asynchronous hyperband early stopping, configured with
+    # `episode_reward_mean` as the
+    # objective and `training_iteration` as the time unit,
+    # which is automatically filled by Tune.
+    ahb = AsyncHyperBandScheduler(
+        time_attr="training_iteration",
+        reward_attr="episode_reward_mean",
+        grace_period=5,
+        max_t=100)
 
+    ray.init()
     trials = run_experiments(experiments={'exp_tune': tune_spec}, scheduler=ahb)
