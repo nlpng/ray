@@ -14,13 +14,6 @@ spec:
         component: ray-worker
         type: ray
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  type: ray
-              topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-worker
           image: registry.leapmind.xyz/huang/ray-deploy
