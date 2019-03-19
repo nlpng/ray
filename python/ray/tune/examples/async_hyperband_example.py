@@ -12,7 +12,7 @@ import random
 import numpy as np
 
 import ray
-from ray.tune import Trainable, run, sample_from
+from ray.tune import grid_search, run_experiments, register_trainable, Trainable, function, sample_from
 from ray.tune.schedulers import AsyncHyperBandScheduler
 
 
@@ -47,10 +47,7 @@ class MyTrainableClass(Trainable):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--smoke-test", action="store_true", help="Finish quickly for testing")
-    args, _ = parser.parse_known_args()
+    register_trainable('tunable', MyTrainableClass)
     ray.init()
 
     # asynchronous hyperband early stopping, configured with
@@ -63,21 +60,19 @@ if __name__ == "__main__":
         grace_period=5,
         max_t=100)
 
-    run(MyTrainableClass,
-        name="asynchyperband_test",
-        scheduler=ahb,
-        **{
-            "stop": {
-                "training_iteration": 1 if args.smoke_test else 99999
-            },
-            "num_samples": 20,
-            "resources_per_trial": {
-                "cpu": 1,
-                "gpu": 0
-            },
-            "config": {
-                "width": sample_from(
-                    lambda spec: 10 + int(90 * random.random())),
-                "height": sample_from(lambda spec: int(100 * random.random())),
-            },
-        })
+    tune_spec = {
+        "stop": {
+            "training_iteration": 1000
+        },
+        "resources_per_trial": {
+            "cpu": 1,
+            "gpu": 0
+        },
+        "config": {
+            "width": sample_from(lambda spec: 10 + int(90 * random.random())),
+            "height": sample_from(lambda spec: int(100 * random.random())),
+        },
+        "num_samples": 20,
+    }
+
+    trials = run_experiments(experiments={'exp_tune': tune_spec}, scheduler=ahb)
