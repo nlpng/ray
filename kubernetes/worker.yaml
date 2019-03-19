@@ -19,9 +19,9 @@ spec:
           image: registry.leapmind.xyz/huang/ray-deploy
           command: ["/bin/bash", "-c", "--"]
           args:
-            - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/tune_mnist_async_hyperband.py &&
-              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346 --block &&
-              python tune_mnist_async_hyperband.py"
+            - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/tune_mnist_ray.py &&
+              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346  &&
+              python tune_mnist_ray.py"
           ports:
             - containerPort: 12345
             - containerPort: 12346

@@ -5,6 +5,7 @@ from __future__ import print_function
 import numpy as np
 import argparse
 import keras
+import socket
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
@@ -170,7 +171,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     mnist.load_data()  # we do this because it's not threadsafe
 
-    ray.init()
+    ray.init(redis_address=socket.gethostbyname("ray-head") + ":6379")
     sched = AsyncHyperBandScheduler(
         time_attr="timesteps_total",
         reward_attr="mean_accuracy",
