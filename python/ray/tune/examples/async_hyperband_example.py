@@ -74,5 +74,7 @@ if __name__ == "__main__":
         grace_period=5,
         max_t=100)
 
+    print(socket.gethostbyname("ray-head") + ":6379")
+
     ray.init(redis_address=socket.gethostbyname("ray-head") + ":6379")
     trials = run_experiments(experiments={'exp_tune': tune_spec}, scheduler=ahb)
