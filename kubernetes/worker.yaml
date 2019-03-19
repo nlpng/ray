@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ray-worker
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       component: ray-worker
@@ -14,20 +14,13 @@ spec:
         component: ray-worker
         type: ray
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoreDuringExecution:
-          - labelSelector:
-              matchLabels:
-                type: ray
-            topologyKey: kubernetes.io/hostname
       containers:
         - name: ray-worker
           image: registry.leapmind.xyz/huang/ray-deploy
           command: ["/bin/bash", "-c", "--"]
           args:
-            - "wget https://raw.githubusercontent.com/nlpng/ray/master/python/ray/tune/examples/tune_mnist_async_hyperband.py &&
-              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346 --block
+            - "wget https://raw.githubusercontent.com/nlpng/ray/deploy/k8s/python/ray/tune/examples/tune_mnist_async_hyperband.py &&
+              ray start --node-ip-address=$MY_POD_IP --redis-address=$(python -c 'import socket;import sys; sys.stdout.write(socket.gethostbyname(\"ray-head\"));sys.stdout.flush()'):6379 --object-manager-port=12345 --node-manager-port=12346 --block &&
               python tune_mnist_async_hyperband.py"
           ports:
             - containerPort: 12345
@@ -37,8 +30,5 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          resources:
-            limits:
-              nvidia.com/gpu: 4
       imagePullSecrets:
         - name: huang-registry-secret

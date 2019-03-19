@@ -35,7 +35,7 @@ RUN apt-get update -y \
     && cd /usr/local/bin \
     && ln -s /usr/bin/python3 python \
     && pip3 install --upgrade pip \
-    && pip install -U setuptools wheel \
+    && pip install -U setuptools wheel requests \
     && pip install -U ray \
     && pip install --no-cache-dir psutil setproctitle \
     && pip install tensorflow-gpu==1.10.0 \
