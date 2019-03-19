@@ -61,6 +61,7 @@ if __name__ == "__main__":
         max_t=100)
 
     tune_spec = {
+        "run'": "tunable",
         "stop": {
             "training_iteration": 1000
         },
